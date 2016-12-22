@@ -1,8 +1,11 @@
+import { TypeaheadDirective }from './typeahead.directive';
+
 export class TypeaheadOptions {
   public placement:string;
   public animation:boolean;
+  public typeaheadRef:TypeaheadDirective;
 
-  constructor(options:TypeaheadOptions) {
+  public constructor(options:TypeaheadOptions) {
     Object.assign(this, options);
   }
 }

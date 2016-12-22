@@ -22,19 +22,19 @@
 
 <small><em>Object (changes type based on value)</em></small>
 <progress class="progress progress-striped progress-animated active progress-{{ type }}" [value]="dynamic" [max]="max">
-  {{type}} <i [hidden]="!showWarning">!!! Watch out !!!</i>
+  {{type}} <i *ngIf="showWarning">!!! Watch out !!!</i>
 </progress>
 
 <hr />
 <h3>Stacked <button type="button" class="btn btn-sm btn-primary" (click)="randomStacked()">Randomize</button></h3>
 <div class="row col-lg-12">
   <!-- todo: implement as component -->
-  <progress *ngFor="#baz of stacked"
+  <progress *ngFor="let baz of stacked"
             class="progress progress-{{ baz?.type }}"
             style="float: left;"
             [ngStyle]="{width: baz.value + '%'}"
             [value]="baz.value" [max]="baz.max">
-    <span [hidden]="baz.value < 5">{{baz?.value}}%</span>
+    <span *ngIf="baz.value > 3">{{baz?.value}}%</span>
   </progress>
   <!-- gray background -->
   <progress class="progress" value="0" max="100" style="width: 100%;"></progress>

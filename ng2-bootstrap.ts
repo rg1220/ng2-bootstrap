@@ -1,19 +1,3 @@
-import {ACCORDION_DIRECTIVES} from './components/accordion';
-import {Alert} from './components/alert';
-import {Affix} from './components/affix';
-import {BUTTON_DIRECTIVES} from './components/buttons';
-import {CAROUSEL_DIRECTIVES} from './components/carousel';
-import {Collapse} from './components/collapse';
-import {DATEPICKER_DIRECTIVES} from './components/datepicker';
-import {DROPDOWN_DIRECTIVES} from './components/dropdown';
-import {PAGINATION_DIRECTIVES} from './components/pagination';
-import {PROGRESSBAR_DIRECTIVES} from './components/progressbar';
-import {Rating} from './components/rating';
-import {TAB_DIRECTIVES} from './components/tabs';
-import {Timepicker} from './components/timepicker';
-import {TOOLTIP_DIRECTIVES} from './components/tooltip';
-import {TYPEAHEAD_DIRECTIVES} from './components/typeahead';
-
 export * from './components/accordion';
 export * from './components/alert';
 export * from './components/affix';
@@ -21,6 +5,7 @@ export * from './components/buttons';
 export * from './components/carousel';
 export * from './components/collapse';
 export * from './components/datepicker';
+export * from './components/modal';
 export * from './components/dropdown';
 export * from './components/pagination';
 export * from './components/progressbar';
@@ -34,20 +19,22 @@ export * from './components/position';
 export * from './components/common';
 export * from './components/ng2-bootstrap-config';
 
-export default {
-  directives: [
-    ACCORDION_DIRECTIVES,
-    BUTTON_DIRECTIVES,
-    CAROUSEL_DIRECTIVES,
-    Collapse,
-    DATEPICKER_DIRECTIVES,
-    DROPDOWN_DIRECTIVES,
-    PAGINATION_DIRECTIVES,
-    PROGRESSBAR_DIRECTIVES,
-    Rating,
-    TAB_DIRECTIVES,
-    Timepicker,
-    TOOLTIP_DIRECTIVES,
-    TYPEAHEAD_DIRECTIVES
-  ]
-};
+export { AccordionModule } from './components/accordion/accordion.module';
+export { AlertModule } from './components/alert/alert.module';
+export { AffixModule } from './components/affix/affix.module';
+export { ButtonsModule } from './components/buttons/buttons.module';
+export { CarouselModule } from './components/carousel/carousel.module';
+export { CollapseModule } from './components/collapse/collapse.module';
+export { DatepickerModule } from './components/datepicker/datepicker.module';
+export { DropdownModule } from './components/dropdown/dropdown.module';
+export { ModalModule } from './components/modal/modal.module';
+export { PaginationModule } from './components/pagination/pagination.module';
+export { ProgressbarModule } from './components/progressbar/progressbar.module';
+export { RatingModule } from './components/rating/rating.module';
+export { TabsModule } from './components/tabs/tabs.module';
+export { TimepickerModule } from './components/timepicker/timepicker.module';
+export { TooltipModule } from './components/tooltip/tooltip.module';
+export { TypeaheadModule } from './components/typeahead/typeahead.module';
+export { ComponentsHelper } from './components/utils/components-helper.service';
+
+export { Ng2BootstrapModule } from './components/index';

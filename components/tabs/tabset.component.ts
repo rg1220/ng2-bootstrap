@@ -1,21 +1,19 @@
-import {Component, OnInit, Input} from 'angular2/core';
-import {NgClass} from 'angular2/common';
-import {NgTransclude} from '../common';
-import {Tab} from './tab.directive';
+import { Component, HostBinding, Input, OnDestroy, OnInit } from '@angular/core';
+
+import { TabDirective } from './tab.directive';
 // todo: add active event to tab
 // todo: fix? mixing static and dynamic tabs position tabs in order of creation
 @Component({
   selector: 'tabset',
-  directives: [NgClass, NgTransclude],
   template: `
     <ul class="nav" [ngClass]="classMap" (click)="$event.preventDefault()">
-        <li *ngFor="#tabz of tabs" class="nav-item"
+        <li *ngFor="let tabz of tabs" class="nav-item {{tabz.customClass}}"
           [class.active]="tabz.active" [class.disabled]="tabz.disabled">
-          <a href class="nav-link"
+          <a href="javascript:void(0);" class="nav-link"
             [class.active]="tabz.active" [class.disabled]="tabz.disabled"
             (click)="tabz.active = true">
             <span [ngTransclude]="tabz.headingRef">{{tabz.heading}}</span>
-            <span [hidden]="!tabz.removable">
+            <span *ngIf="tabz.removable">
               <span (click)="$event.preventDefault(); removeTab(tabz);" class="glyphicon glyphicon-remove-circle"></span>
             </span>
           </a>
@@ -26,67 +24,61 @@ import {Tab} from './tab.directive';
     </div>
   `
 })
-export class Tabset implements OnInit {
-  @Input() private get vertical() {
+export class TabsetComponent implements OnInit, OnDestroy {
+  @Input()
+  public get vertical():boolean {
     return this._vertical;
   };
 
-  @Input() private get justified() {
+  @Input()
+  public get justified():boolean {
     return this._justified;
   };
 
-  @Input() private get type() {
+  @Input()
+  public get type():string {
     return this._type;
   };
 
-  private set vertical(value) {
+  @HostBinding('class.tab-container') public clazz:boolean = true;
+
+  public set vertical(value:boolean) {
     this._vertical = value;
     this.setClassMap();
   }
 
-  private set justified(value) {
+  public set justified(value:boolean) {
     this._justified = value;
     this.setClassMap();
   }
 
-  private set type(value) {
+  public set type(value:string) {
     this._type = value;
     this.setClassMap();
   }
 
-  private setClassMap() {
-    this.classMap = {
-      'nav-stacked': this.vertical,
-      'nav-justified': this.justified,
-      ['nav-' + (this.type || 'tabs')]: true
-    };
-  }
-
-  public tabs:Array<Tab> = [];
+  public tabs:Array<TabDirective> = [];
+  public classMap:any = {};
 
   private isDestroyed:boolean;
   private _vertical:boolean;
   private _justified:boolean;
   private _type:string;
-  private classMap:any = {};
 
-  constructor() {
-  }
-
-  ngOnInit() {
+  public ngOnInit():void {
     this.type = this.type !== 'undefined' ? this.type : 'tabs';
   }
 
-  ngOnDestroy() {
+  public ngOnDestroy():void {
     this.isDestroyed = true;
   }
 
-  public addTab(tab:Tab) {
+  public addTab(tab:TabDirective):void {
     this.tabs.push(tab);
     tab.active = this.tabs.length === 1 && tab.active !== false;
   }
 
-  public removeTab(tab:Tab) {
+  public removeTab(tab:TabDirective):void {
     let index = this.tabs.indexOf(tab);
     if (index === -1 || this.isDestroyed) {
       return;
@@ -101,7 +93,7 @@ export class Tabset implements OnInit {
     this.tabs.splice(index, 1);
   }
 
-  private getClosestTabIndex (index:number):number {
+  private getClosestTabIndex(index:number):number {
     let tabsLength = this.tabs.length;
     if (!tabsLength) {
       return -1;
@@ -120,7 +112,7 @@ export class Tabset implements OnInit {
     return -1;
   }
 
-  private hasAvailableTabs (index:number) {
+  private hasAvailableTabs(index:number):boolean {
     let tabsLength = this.tabs.length;
     if (!tabsLength) {
       return false;
@@ -132,5 +124,13 @@ export class Tabset implements OnInit {
       }
     }
     return false;
+  }
+
+  private setClassMap():void {
+    this.classMap = {
+      'nav-stacked': this.vertical,
+      'nav-justified': this.justified,
+      ['nav-' + (this.type || 'tabs')]: true
+    };
   }
 }

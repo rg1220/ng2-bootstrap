@@ -1,11 +1,8 @@
-import {Component} from 'angular2/core';
-import { CORE_DIRECTIVES } from 'angular2/common';
+import { Component } from '@angular/core';
+
+import { Ng2BootstrapConfig, Ng2BootstrapTheme } from '../../../ng2-bootstrap';
 
 // switch bs3\bs4 templates
-import {Ng2BootstrapConfig, Ng2BootstrapTheme} from '../../../ng2-bootstrap';
-
-import {PROGRESSBAR_DIRECTIVES} from '../../../ng2-bootstrap';
-
 // webpack html imports
 let templates:any = {
   [Ng2BootstrapTheme.BS3]: require('./progressbar-demo.html'),
@@ -14,22 +11,21 @@ let templates:any = {
 
 @Component({
   selector: 'progressbar-demo',
-  directives: [PROGRESSBAR_DIRECTIVES, CORE_DIRECTIVES],
   template: templates[Ng2BootstrapConfig.theme]
 })
-export class ProgressbarDemo {
+export class ProgressbarDemoComponent {
   public max:number = 200;
   public showWarning:boolean;
   public dynamic:number;
   public type:string;
   public stacked:any[] = [];
 
-  constructor() {
+  public constructor() {
     this.random();
     this.randomStacked();
   }
 
-  private random() {
+  public random():void {
     let value = Math.floor((Math.random() * 100) + 1);
     let type:string;
 
@@ -48,12 +44,13 @@ export class ProgressbarDemo {
     this.type = type;
   };
 
-  private randomStacked() {
+  public randomStacked():void {
     let types = ['success', 'info', 'warning', 'danger'];
 
     this.stacked = [];
     let total = 0;
-    for (let i = 0, n = Math.floor((Math.random() * 4) + 1); i < n; i++) {
+    let n = Math.floor((Math.random() * 4) + 1);
+    for (let i = 0; i < n; i++) {
       let index = Math.floor((Math.random() * 4));
       let value = Math.floor((Math.random() * 30) + 1);
       total += value;

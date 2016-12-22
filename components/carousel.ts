@@ -1,6 +1,3 @@
-import {Slide} from './carousel/slide.component';
-import {Carousel} from './carousel/carousel.component';
-
-export {Slide} from './carousel/slide.component';
-export {Carousel} from './carousel/carousel.component';
-export const CAROUSEL_DIRECTIVES:Array<any> = [Carousel, Slide];
+export { CarouselComponent } from './carousel/carousel.component';
+export { CarouselModule } from './carousel/carousel.module';
+export { SlideComponent } from './carousel/slide.component';

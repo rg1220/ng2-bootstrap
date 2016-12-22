@@ -1,14 +1,20 @@
-import {Component} from 'angular2/core';
-import {Collapse} from '../../../ng2-bootstrap';
+import { Component } from '@angular/core';
 
 // webpack html imports
 let template = require('./collapse-demo.html');
 
 @Component({
   selector: 'collapse-demo',
-  directives: [Collapse],
   template: template
 })
-export class CollapseDemo {
+export class CollapseDemoComponent {
   public isCollapsed:boolean = false;
+
+  public collapsed(event:any):void {
+    console.log(event);
+  }
+
+  public expanded(event:any):void {
+    console.log(event);
+  }
 }

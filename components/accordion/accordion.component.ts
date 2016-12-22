@@ -1,40 +1,39 @@
-import {Component, Input, HostBinding} from 'angular2/core';
+import { Component, HostBinding, Input } from '@angular/core';
 
-import {AccordionPanel} from './accordion-group.component';
+import { AccordionPanelComponent } from './accordion-group.component';
 
 // todo: support template url
 @Component({
   selector: 'accordion',
   template: `<ng-content></ng-content>`
 })
-export class Accordion {
+export class AccordionComponent {
   @Input() public closeOthers:boolean;
 
+  /* tslint:disable:no-unused-variable */
   @HostBinding('class.panel-group')
-  private addClass = true;
+  public addClass:boolean = true;
+  /* tslint:enable:no-unused-variable */
 
-  constructor() {
-  }
+  private groups:Array<AccordionPanelComponent> = [];
 
-  private groups:Array<AccordionPanel> = [];
-
-  public closeOtherPanels(openGroup:AccordionPanel) {
+  public closeOtherPanels(openGroup:AccordionPanelComponent):void {
     if (!this.closeOthers) {
       return;
     }
 
-    this.groups.forEach((group:AccordionPanel) => {
+    this.groups.forEach((group:AccordionPanelComponent) => {
       if (group !== openGroup) {
         group.isOpen = false;
       }
     });
   }
 
-  public addGroup(group:AccordionPanel) {
+  public addGroup(group:AccordionPanelComponent):void {
     this.groups.push(group);
   }
 
-  public removeGroup(group:AccordionPanel) {
+  public removeGroup(group:AccordionPanelComponent):void {
     let index = this.groups.indexOf(group);
     if (index !== -1) {
       this.groups.splice(index, 1);

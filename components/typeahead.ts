@@ -1,8 +1,7 @@
-import {Typeahead} from './typeahead/typeahead.directive';
-import {TypeaheadContainer} from './typeahead/typeahead-container.component';
-import {TypeaheadOptions} from './typeahead/typeahead-options.class';
+export { TypeaheadMatch } from './typeahead/typeahead-match.class';
+export { TypeaheadOptions } from './typeahead/typeahead-options.class';
 
-export {Typeahead} from './typeahead/typeahead.directive';
-export {TypeaheadContainer} from './typeahead/typeahead-container.component';
-export {TypeaheadOptions} from './typeahead/typeahead-options.class';
-export const TYPEAHEAD_DIRECTIVES = [Typeahead, TypeaheadContainer];
+export { TypeaheadUtils } from './typeahead/typeahead-utils';
+export { TypeaheadContainerComponent } from './typeahead/typeahead-container.component';
+export { TypeaheadDirective } from './typeahead/typeahead.directive';
+export { TypeaheadModule } from './typeahead/typeahead.module';

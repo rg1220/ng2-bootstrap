@@ -1,12 +1,15 @@
-import {Component, OnInit, OnDestroy, Input, HostBinding, Inject} from 'angular2/core';
-import {NgClass} from 'angular2/common';
+import {
+  Component, HostBinding, Inject, Input, OnDestroy, OnInit
+} from '@angular/core';
 
-import {Collapse} from '../collapse';
-import {Accordion} from './accordion.component';
+import { AccordionComponent } from './accordion.component';
 
+/* tslint:disable-next-line */
+const MouseEvent = (global as any).MouseEvent as MouseEvent;
+
+/* tslint:disable:component-selector-name */
 @Component({
   selector: 'accordion-group, accordion-panel',
-  directives: [Collapse, NgClass],
   template: `
     <div class="panel" [ngClass]="panelClass">
       <div class="panel-heading" (click)="toggleOpen($event)">
@@ -25,13 +28,15 @@ import {Accordion} from './accordion.component';
     </div>
   `
 })
-export class AccordionPanel implements OnInit, OnDestroy {
+export class AccordionPanelComponent implements OnInit, OnDestroy {
   @Input() public heading:string;
   @Input() public panelClass:string;
   @Input() public isDisabled:boolean;
 
+  // Questionable, maybe .panel-open should be on child div.panel element?
   @HostBinding('class.panel-open')
-  @Input() public get isOpen():boolean {
+  @Input()
+  public get isOpen():boolean {
     return this._isOpen;
   }
 
@@ -43,20 +48,22 @@ export class AccordionPanel implements OnInit, OnDestroy {
   }
 
   private _isOpen:boolean;
+  private accordion:AccordionComponent;
 
-  constructor(@Inject(Accordion) private accordion:Accordion) {
+  public constructor(@Inject(AccordionComponent) accordion:AccordionComponent) {
+    this.accordion = accordion;
   }
 
-  ngOnInit() {
+  public ngOnInit():any {
     this.panelClass = this.panelClass || 'panel-default';
     this.accordion.addGroup(this);
   }
 
-  ngOnDestroy() {
+  public ngOnDestroy():any {
     this.accordion.removeGroup(this);
   }
 
-  public toggleOpen(event:MouseEvent) {
+  public toggleOpen(event:MouseEvent):any {
     event.preventDefault();
     if (!this.isDisabled) {
       this.isOpen = !this.isOpen;

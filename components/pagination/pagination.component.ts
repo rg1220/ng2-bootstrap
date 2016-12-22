@@ -1,29 +1,37 @@
-import {Component, OnInit, Input, Output, ElementRef, EventEmitter, Self, Renderer} from 'angular2/core';
-import {NgFor, NgIf, ControlValueAccessor, NgModel} from 'angular2/common';
-import {IAttribute} from '../common';
+import {
+  Component, ElementRef, EventEmitter, Input, OnInit, Output, Renderer, Self
+} from '@angular/core';
+import { ControlValueAccessor, NgModel } from '@angular/forms';
+
+import { KeyAttribute } from '../common';
+
+/* tslint:disable-next-line */
+const MouseEvent = (global as any).MouseEvent as MouseEvent;
 
 // todo: extract base functionality classes
 // todo: expose an option to change default configuration
-export interface IPaginationConfig extends IAttribute {
-  maxSize: number;
-  itemsPerPage: number;
+export interface PaginationConfig extends KeyAttribute {
+  maxSize:number;
+  itemsPerPage:number;
   // is navigation buttons visible
-  boundaryLinks: boolean;
-  directionLinks: boolean;
+  boundaryLinks:boolean;
+  directionLinks:boolean;
   // labels
-  firstText: string;
-  previousText: string;
-  nextText: string;
-  lastText: string;
+  firstText:string;
+  previousText:string;
+  nextText:string;
+  lastText:string;
+  // css
+  pageBtnClass:string;
 
-  rotate: boolean;
+  rotate:boolean;
 }
-export interface IPageChangedEvent {
-  itemsPerPage: number;
-  page: number;
+export interface PageChangedEvent {
+  itemsPerPage:number;
+  page:number;
 }
 
-const paginationConfig:IPaginationConfig = {
+const paginationConfig:PaginationConfig = {
   maxSize: void 0,
   itemsPerPage: 10,
   boundaryLinks: false,
@@ -32,6 +40,7 @@ const paginationConfig:IPaginationConfig = {
   previousText: 'Previous',
   nextText: 'Next',
   lastText: 'Last',
+  pageBtnClass: '',
   rotate: true
 };
 
@@ -49,7 +58,7 @@ const PAGINATION_TEMPLATE = `
       <a class="page-link" href (click)="selectPage(page - 1, $event)" [innerHTML]="getText('previous')"></a>
       </li>
 
-    <li *ngFor="#pg of pages"
+    <li *ngFor="let pg of pages"
         [class.active]="pg.active"
         [class.disabled]="disabled&&!pg.active"
         class="pagination-page page-item">
@@ -58,22 +67,26 @@ const PAGINATION_TEMPLATE = `
 
     <li class="pagination-next page-item"
         *ngIf="directionLinks"
-        [class.disabled]="noNext()">
+        [class.disabled]="noNext()||disabled">
       <a class="page-link" href (click)="selectPage(page + 1, $event)" [innerHTML]="getText('next')"></a></li>
 
     <li class="pagination-last page-item"
         *ngIf="boundaryLinks"
-        [class.disabled]="noNext()">
+        [class.disabled]="noNext()||disabled">
       <a class="page-link" href (click)="selectPage(totalPages, $event)" [innerHTML]="getText('last')"></a></li>
   </ul>
   `;
 
+/* tslint:disable */
 @Component({
   selector: 'pagination[ngModel]',
   template: PAGINATION_TEMPLATE,
-  directives: [NgFor, NgIf]
+  providers: [NgModel]
 })
-export class Pagination implements ControlValueAccessor, OnInit, IPaginationConfig, IAttribute {
+/* tslint:enable */
+export class PaginationComponent implements ControlValueAccessor, OnInit, PaginationConfig, KeyAttribute {
+  public config:any;
+  @Input() public align:boolean;
   @Input() public maxSize:number;
 
   @Input() public boundaryLinks:boolean;
@@ -84,13 +97,16 @@ export class Pagination implements ControlValueAccessor, OnInit, IPaginationConf
   @Input() public nextText:string;
   @Input() public lastText:string;
   @Input() public rotate:boolean;
+  // css
+  @Input() public pageBtnClass:string;
 
-  @Input() private disabled:boolean;
+  @Input() public disabled:boolean;
 
-  @Output() private numPages:EventEmitter<number> = new EventEmitter(false);
-  @Output() private pageChanged:EventEmitter<IPageChangedEvent> = new EventEmitter(false);
+  @Output() public numPages:EventEmitter<number> = new EventEmitter<number>(false);
+  @Output() public pageChanged:EventEmitter<PageChangedEvent> = new EventEmitter<PageChangedEvent>(false);
 
-  @Input() public get itemsPerPage() {
+  @Input()
+  public get itemsPerPage():number {
     return this._itemsPerPage;
   }
 
@@ -99,29 +115,21 @@ export class Pagination implements ControlValueAccessor, OnInit, IPaginationConf
     this.totalPages = this.calculateTotalPages();
   }
 
-  @Input() private get totalItems():number {
+  @Input()
+  public get totalItems():number {
     return this._totalItems;
   }
 
-  private set totalItems(v:number) {
+  public set totalItems(v:number) {
     this._totalItems = v;
     this.totalPages = this.calculateTotalPages();
   }
 
-  public config:any;
-  private classMap:string;
-
-  private _itemsPerPage:number;
-  private _totalItems:number;
-  private _totalPages:number;
-
-  private inited:boolean = false;
-
-  private get totalPages() {
+  public get totalPages():number {
     return this._totalPages;
   }
 
-  private set totalPages(v:number) {
+  public set totalPages(v:number) {
     this._totalPages = v;
     this.numPages.emit(v);
     if (this.inited) {
@@ -129,7 +137,7 @@ export class Pagination implements ControlValueAccessor, OnInit, IPaginationConf
     }
   }
 
-  public set page(value) {
+  public set page(value:number) {
     const _previous = this._page;
     this._page = (value > this.totalPages) ? this.totalPages : (value || 1);
 
@@ -143,29 +151,57 @@ export class Pagination implements ControlValueAccessor, OnInit, IPaginationConf
     });
   }
 
-  public get page() {
+  public get page():number {
     return this._page;
   }
 
-  // ??
-  private _page:number;
-  private pages:Array<any>;
+  public onChange:any = Function.prototype;
+  public onTouched:any = Function.prototype;
 
-  constructor(@Self() public cd:NgModel, public renderer:Renderer, public elementRef:ElementRef) {
+  public cd:NgModel;
+  public renderer:Renderer;
+  public elementRef:ElementRef;
+
+  public classMap:string;
+  public pages:Array<any>;
+
+  private _itemsPerPage:number;
+  private _totalItems:number;
+  private _totalPages:number;
+  private inited:boolean = false;
+  private _page:number;
+
+  public constructor(@Self() cd:NgModel, renderer:Renderer, elementRef:ElementRef) {
+    this.cd = cd;
+    this.renderer = renderer;
+    this.elementRef = elementRef;
     cd.valueAccessor = this;
     this.config = this.config || paginationConfig;
   }
 
-  ngOnInit() {
+  public ngOnInit():void {
     this.classMap = this.elementRef.nativeElement.getAttribute('class') || '';
     // watch for maxSize
-    this.maxSize = typeof this.maxSize !== 'undefined' ? this.maxSize : paginationConfig.maxSize;
-    this.rotate = typeof this.rotate !== 'undefined' ? this.rotate : paginationConfig.rotate;
-    this.boundaryLinks = typeof this.boundaryLinks !== 'undefined' ? this.boundaryLinks : paginationConfig.boundaryLinks;
-    this.directionLinks = typeof this.directionLinks !== 'undefined' ? this.directionLinks : paginationConfig.directionLinks;
+    this.maxSize = typeof this.maxSize !== 'undefined'
+      ? this.maxSize
+      : paginationConfig.maxSize;
+    this.rotate = typeof this.rotate !== 'undefined'
+      ? this.rotate
+      : paginationConfig.rotate;
+    this.boundaryLinks = typeof this.boundaryLinks !== 'undefined'
+      ? this.boundaryLinks
+      : paginationConfig.boundaryLinks;
+    this.directionLinks = typeof this.directionLinks !== 'undefined'
+      ? this.directionLinks
+      : paginationConfig.directionLinks;
+    this.pageBtnClass = typeof this.pageBtnClass !== 'undefined'
+    ? this.pageBtnClass
+    : paginationConfig.pageBtnClass;
 
     // base class
-    this.itemsPerPage = typeof this.itemsPerPage !== 'undefined' ? this.itemsPerPage : paginationConfig.itemsPerPage;
+    this.itemsPerPage = typeof this.itemsPerPage !== 'undefined'
+      ? this.itemsPerPage
+      : paginationConfig.itemsPerPage;
     this.totalPages = this.calculateTotalPages();
     // this class
     this.pages = this.getPages(this.page, this.totalPages);
@@ -173,12 +209,32 @@ export class Pagination implements ControlValueAccessor, OnInit, IPaginationConf
     this.inited = true;
   }
 
-  writeValue(value:number) {
+  public writeValue(value:number):void {
     this.page = value;
     this.pages = this.getPages(this.page, this.totalPages);
   }
 
-  private selectPage(page:number, event?:MouseEvent) {
+  public getText(key:string):string {
+    return (this as KeyAttribute)[key + 'Text'] || paginationConfig[key + 'Text'];
+  }
+
+  public noPrevious():boolean {
+    return this.page === 1;
+  }
+
+  public noNext():boolean {
+    return this.page === this.totalPages;
+  }
+
+  public registerOnChange(fn:(_:any) => {}):void {
+    this.onChange = fn;
+  }
+
+  public registerOnTouched(fn:() => {}):void {
+    this.onTouched = fn;
+  }
+
+  public selectPage(page:number, event?:MouseEvent):void {
     if (event) {
       event.preventDefault();
     }
@@ -193,22 +249,10 @@ export class Pagination implements ControlValueAccessor, OnInit, IPaginationConf
     }
   }
 
-  private getText(key:string):string {
-    return (<IAttribute>this)[key + 'Text'] || paginationConfig[key + 'Text'];
-  }
-
-  private noPrevious():boolean {
-    return this.page === 1;
-  }
-
-  private noNext():boolean {
-    return this.page === this.totalPages;
-  }
-
   // Create page object used in template
-  private makePage(number:number, text:string, isActive:boolean):{number: number, text: string, active: boolean} {
+  private makePage(num:number, text:string, isActive:boolean):{number:number, text:string, active:boolean} {
     return {
-      number: number,
+      number: num,
       text: text,
       active: isActive
     };
@@ -244,8 +288,8 @@ export class Pagination implements ControlValueAccessor, OnInit, IPaginationConf
     }
 
     // Add page number links
-    for (var number = startPage; number <= endPage; number++) {
-      let page = this.makePage(number, number.toString(), number === currentPage);
+    for (let num = startPage; num <= endPage; num++) {
+      let page = this.makePage(num, num.toString(), num === currentPage);
       pages.push(page);
     }
 
@@ -267,20 +311,9 @@ export class Pagination implements ControlValueAccessor, OnInit, IPaginationConf
 
   // base class
   private calculateTotalPages():number {
-    let totalPages = this.itemsPerPage < 1 ? 1 : Math.ceil(this.totalItems / this.itemsPerPage);
+    let totalPages = this.itemsPerPage < 1
+      ? 1
+      : Math.ceil(this.totalItems / this.itemsPerPage);
     return Math.max(totalPages || 0, 1);
-  }
-
-  onChange = (_:any) => {
-  };
-  onTouched = () => {
-  };
-
-  registerOnChange(fn:(_:any) => {}):void {
-    this.onChange = fn;
-  }
-
-  registerOnTouched(fn:() => {}):void {
-    this.onTouched = fn;
   }
 }

@@ -1,29 +1,29 @@
 ### Usage
 ```typescript
-import { CAROUSEL_DIRECTIVES } from 'ng2-bootstrap/ng2-bootstrap';
+import { CarouselModule } from 'ng2-bootstrap/ng2-bootstrap';
+// or
+import { CarouselModule } from 'ng2-bootstrap/components/carousel';
 ```
 
 ### Annotations
 ```typescript
 // class Carousel implements OnDestroy
 @Component({
-  selector: 'carousel',
-  directives: [NgFor]
+  selector: 'carousel'
 })
-export class Carousel implements OnDestroy {
-  @Input() private noWrap:boolean;
-  @Input() private noPause:boolean;
-  @Input() private noTransition:boolean;
+export class CarouselComponent implements OnDestroy {
+  @Input() public noWrap:boolean;
+  @Input() public noPause:boolean;
+  @Input() public noTransition:boolean;
 
   @Input() public get interval():number {}
 }
 
 // class Slide implements OnInit, OnDestroy
 @Component({
-  selector: 'slide',
-  directives: [NgClass]
+  selector: 'slide'
 })
-export class Slide implements OnInit, OnDestroy {
+export class SlideComponent implements OnInit, OnDestroy {
   @Input() public index:number;
   @Input() public direction:Direction;
 
@@ -32,10 +32,8 @@ export class Slide implements OnInit, OnDestroy {
 
   @HostBinding('class.item')
   @HostBinding('class.carousel-item')
-  private addClass:boolean = true;
+  public addClass:boolean = true;
 }
-
-export const CAROUSEL_DIRECTIVES:Array<any> = [Carousel, Slide];
 ```
 
 ### Carousel properties

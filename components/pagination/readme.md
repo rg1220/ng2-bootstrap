@@ -1,6 +1,8 @@
 ### Usage
 ```typescript
-import { PAGINATION_DIRECTIVES } from 'ng2-bootstrap/ng2-bootstrap';
+import { PaginationModule } from 'ng2-bootstrap/ng2-bootstrap';
+// or
+import { PaginationModule } from 'ng2-bootstrap/components/pagination';
 ```
 
 ### Annotations
@@ -8,10 +10,9 @@ import { PAGINATION_DIRECTIVES } from 'ng2-bootstrap/ng2-bootstrap';
 // component Pagination
 @Component({
   selector: 'pagination[ngModel]',
-  template: PAGINATION_TEMPLATE,
-  directives: [NgClass, NgFor]
+  template: PAGINATION_TEMPLATE
 })
-export class Pagination implements ControlValueAccessor, OnInit, IPaginationConfig, IAttribute {
+export class PaginationComponent implements ControlValueAccessor, OnInit, IPaginationConfig, IAttribute {
   @Input() public maxSize:number;
 
   @Input() public boundaryLinks:boolean;
@@ -22,28 +23,21 @@ export class Pagination implements ControlValueAccessor, OnInit, IPaginationConf
   @Input() public nextText:string;
   @Input() public lastText:string;
   @Input() public rotate:boolean;
+  // css
+  @Input() public pageBtnClass: string;
 
-  @Input() private disabled:boolean;
+  @Input() public disabled:boolean;
   @Input() public get itemsPerPage():number {}
-  @Input() private get totalItems():number {}
+  @Input() public get totalItems():number {}
 
-  @Output() private numPages:EventEmitter<number> = new EventEmitter(false);
-  @Output() private pageChanged:EventEmitter<IPageChangedEvent> = new EventEmitter(false);
+  @Output() public numPages:EventEmitter<number> = new EventEmitter(false);
+  @Output() public pageChanged:EventEmitter<IPageChangedEvent> = new EventEmitter(false);
 
 @Component({
   selector: 'pager[ngModel]',
-  inputs: [
-    'align',
-    'totalItems', 'itemsPerPage',
-    'previousText', 'nextText',
-  ],
-  outputs:['numPages', 'pageChanged'],
-  template: PAGER_TEMPLATE,
-  directives: [NgClass]
+  template: PAGER_TEMPLATE
 })
-export class Pager extends Pagination {}
-
-export const PAGINATION_DIRECTIVES:Array<any> = [Pagination, Pager];
+export class PagerComponent extends Pagination {}
 ```
 ### Pagination properties
   - `rotate` (`?boolean=true`) - if `true` current page will in the middle of pages list
@@ -57,6 +51,7 @@ export const PAGINATION_DIRECTIVES:Array<any> = [Pagination, Pager];
   - `nextText` (`?string='Next'`) - next button text
   - `firstText` (`?string='First'`) - first button text
   - `lastText` (`?string='Last'`) - last button text
+  - `pageBtnClass` (`?string=''`) - add class to `<li>`
 
 ### Pagination events
   - `numPages` - fired when total pages count changes, `$event:number` equals to total pages count
@@ -69,6 +64,7 @@ export const PAGINATION_DIRECTIVES:Array<any> = [Pagination, Pager];
   - `itemsPerPage` (`?number=10`) - maximum number of items per page. If value less than 1 will display all items on one page
   - `previousText` (`?string='Previous'`) - previous button text
   - `nextText` (`?string='Next'`) - next button text
+  - `pageBtnClass` (`?string=''`) - add class to `<li>`
 
 ### Pager events
   - `numPages` - fired when total pages count changes, `$event:number` equals to total pages count

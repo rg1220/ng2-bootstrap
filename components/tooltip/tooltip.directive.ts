@@ -1,64 +1,122 @@
-import {Directive, OnInit, Input, HostListener, ElementRef, DynamicComponentLoader, ComponentRef, Provider, Injector} from 'angular2/core';
-import {TooltipOptions} from './tooltip-options.class';
-import {TooltipContainer} from './tooltip-container.component';
+import {
+  ChangeDetectorRef,
+  ComponentRef,
+  Directive,
+  HostListener,
+  Input,
+  ReflectiveInjector,
+  TemplateRef,
+  ViewContainerRef,
+  Output,
+  EventEmitter
+} from '@angular/core';
 
-@Directive({selector: '[tooltip]'})
-export class Tooltip implements OnInit {
-  @Input('tooltip') public content:string;
-  @Input('tooltipPlacement') public placement:string = 'top';
-  @Input('tooltipIsOpen') public isOpen:boolean;
-  @Input('tooltipEnable') public enable:boolean;
-  @Input('tooltipAnimation') public animation:boolean = true;
-  @Input('tooltipAppendToBody') public appendToBody:boolean;
+import { TooltipContainerComponent } from './tooltip-container.component';
+import { TooltipOptions } from './tooltip-options.class';
+import { ComponentsHelper } from '../utils/components-helper.service';
 
-  private visible:boolean = false;
-  private tooltip:Promise<ComponentRef>;
+/* tslint:disable */
+@Directive({
+  selector: '[tooltip], [tooltipHtml]',
+  exportAs: 'bs-tooltip'
+})
+/* tslint:enable */
+export class TooltipDirective {
+  /* tslint:disable */
+  @Input('tooltip') public content: string;
+  @Input('tooltipHtml') public htmlContent: string | TemplateRef<any>;
+  @Input('tooltipPlacement') public placement: string = 'top';
+  @Input('tooltipIsOpen') public isOpen: boolean;
+  @Input('tooltipEnable') public enable: boolean = true;
+  @Input('tooltipAnimation') public animation: boolean = true;
+  @Input('tooltipAppendToBody') public appendToBody: boolean = false;
+  @Input('tooltipClass') public popupClass: string;
+  @Input('tooltipContext') public tooltipContext: any;
+  @Input('tooltipPopupDelay') public delay: number = 0;
+  /* tslint:enable */
 
-  constructor(public element:ElementRef,
-              public loader:DynamicComponentLoader) {
-  }
+  @Output() public tooltipStateChanged: EventEmitter<boolean> = new EventEmitter<boolean>();
 
-  ngOnInit() {
+  public viewContainerRef: ViewContainerRef;
+  public componentsHelper: ComponentsHelper;
+
+  private changeDetectorRef: ChangeDetectorRef;
+  private visible: boolean = false;
+  private tooltip: ComponentRef<any>;
+
+  private delayTimeoutId: number;
+
+  public constructor(viewContainerRef: ViewContainerRef,
+                     componentsHelper: ComponentsHelper,
+                     changeDetectorRef: ChangeDetectorRef) {
+    this.viewContainerRef = viewContainerRef;
+    this.componentsHelper = componentsHelper;
+    this.changeDetectorRef = changeDetectorRef;
   }
 
   // todo: filter triggers
   // params: event, target
-  @HostListener('focusin', ['$event', '$target'])
-  @HostListener('mouseenter', ['$event', '$target'])
-  show() {
-    if (this.visible) {
+  @HostListener('focusin')
+  @HostListener('mouseenter')
+  public show(): void {
+    if (this.visible || !this.enable || this.delayTimeoutId) {
       return;
     }
-    this.visible = true;
-    let options = new TooltipOptions({
-      content: this.content,
-      placement: this.placement,
-      animation: this.animation,
-      hostEl: this.element
-    });
 
-    let binding = Injector.resolve([
-      new Provider(TooltipOptions, {useValue: options})
-    ]);
-
-    this.tooltip = this.loader
-      .loadNextToLocation(TooltipContainer, this.element, binding)
-      .then((componentRef:ComponentRef) => {
-        return componentRef;
+    const showTooltip = () => {
+      this.visible = true;
+      let options = new TooltipOptions({
+        content: this.content,
+        htmlContent: this.htmlContent,
+        placement: this.placement,
+        animation: this.animation,
+        appendToBody: this.appendToBody,
+        hostEl: this.viewContainerRef.element,
+        popupClass: this.popupClass,
+        context: this.tooltipContext
       });
+
+      if (this.appendToBody) {
+        this.tooltip = this.componentsHelper
+          .appendNextToRoot(TooltipContainerComponent, TooltipOptions, options);
+      } else {
+        let binding = ReflectiveInjector.resolve([
+          {provide: TooltipOptions, useValue: options}
+        ]);
+        this.tooltip = this.componentsHelper
+          .appendNextToLocation(TooltipContainerComponent, this.viewContainerRef, binding);
+      }
+
+      this.changeDetectorRef.markForCheck();
+      this.triggerStateChanged();
+    };
+
+    if (this.delay) {
+      this.delayTimeoutId = setTimeout(() => { showTooltip(); }, this.delay);
+    } else {
+      showTooltip();
+    }
   }
 
   // params event, target
-  @HostListener('focusout', ['$event', '$target'])
-  @HostListener('mouseleave', ['$event', '$target'])
-  hide() {
+  @HostListener('focusout')
+  @HostListener('mouseleave')
+  public hide(): void {
+    if (this.delayTimeoutId) {
+      clearTimeout(this.delayTimeoutId);
+      this.delayTimeoutId = undefined;
+    }
+
     if (!this.visible) {
       return;
     }
+
     this.visible = false;
-    this.tooltip.then((componentRef:ComponentRef) => {
-      componentRef.dispose();
-      return componentRef;
-    });
+    this.tooltip.destroy();
+    this.triggerStateChanged();
+  }
+
+  private triggerStateChanged(): void {
+    this.tooltipStateChanged.emit(this.visible);
   }
 }

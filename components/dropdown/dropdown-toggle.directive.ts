@@ -1,36 +1,48 @@
 import {
-  Directive, ElementRef, Host,
-  OnInit, Input, HostBinding, HostListener
-} from 'angular2/core';
+  Directive, ElementRef, Host, HostBinding, HostListener, Input, OnInit
+} from '@angular/core';
 
-import {Dropdown} from './dropdown.directive';
+import { DropdownDirective } from './dropdown.directive';
 
-@Directive({ selector: '[dropdownToggle]' })
-export class DropdownToggle implements OnInit {
+/* tslint:disable-next-line */
+const MouseEvent = (global as any).MouseEvent as MouseEvent;
+
+@Directive({
+  selector: '[dropdownToggle]',
+  exportAs: 'bs-dropdown-toggle'
+})
+export class DropdownToggleDirective implements OnInit {
   @HostBinding('class.disabled')
-  @Input() private disabled:boolean = false;
+  @Input() public isDisabled:boolean = false;
 
   @HostBinding('class.dropdown-toggle')
-  @HostBinding('attr.aria-haspopup')
-  private addClass = true;
+  @Input() public addToggleClass:boolean = true;
 
-  constructor(@Host() public dropdown:Dropdown, public el:ElementRef) {
+  @HostBinding('attr.aria-haspopup')
+  public addClass:boolean = true;
+
+  public dropdown:DropdownDirective;
+  public el:ElementRef;
+
+  public constructor(@Host() dropdown:DropdownDirective, el:ElementRef) {
+    this.dropdown = dropdown;
+    this.el = el;
   }
 
-  public ngOnInit() {
+  public ngOnInit():void {
     this.dropdown.dropDownToggle = this;
   }
 
   @HostBinding('attr.aria-expanded')
-  public get isOpen() {
+  public get isOpen():boolean {
     return this.dropdown.isOpen;
   }
 
   @HostListener('click', ['$event'])
-  public toggleDropdown(event:MouseEvent) {
+  public toggleDropdown(event:MouseEvent):boolean {
     event.stopPropagation();
 
-    if (!this.disabled) {
+    if (!this.isDisabled) {
       this.dropdown.toggle();
     }
     return false;

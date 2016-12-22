@@ -3,15 +3,20 @@ export const DISABLED = 'disabled';
 export const OUTSIDECLICK = 'outsideClick';
 export const NONINPUT = 'nonInput';
 
-import {Dropdown} from './dropdown.directive';
+import { DropdownDirective } from './dropdown.directive';
+
+/* tslint:disable-next-line */
+const KeyboardEvent = (global as any).KeyboardEvent as KeyboardEvent;
+/* tslint:disable-next-line */
+const MouseEvent = (global as any).MouseEvent as MouseEvent;
 
 export class DropdownService {
-  private openScope:Dropdown;
+  private openScope:DropdownDirective;
 
   private closeDropdownBind:EventListener = this.closeDropdown.bind(this);
   private keybindFilterBind:EventListener = this.keybindFilter.bind(this);
 
-  public open(dropdownScope:Dropdown) {
+  public open(dropdownScope:DropdownDirective):void {
     if (!this.openScope) {
       window.document.addEventListener('click', this.closeDropdownBind, true);
       window.document.addEventListener('keydown', this.keybindFilterBind);
@@ -24,17 +29,17 @@ export class DropdownService {
     this.openScope = dropdownScope;
   }
 
-  public close(dropdownScope:Dropdown) {
+  public close(dropdownScope:DropdownDirective):void {
     if (this.openScope !== dropdownScope) {
       return;
     }
 
-    this.openScope = null;
+    this.openScope = void 0;
     window.document.removeEventListener('click', this.closeDropdownBind, true);
     window.document.removeEventListener('keydown', this.keybindFilterBind);
   }
 
-  private closeDropdown(event:MouseEvent) {
+  private closeDropdown(event:MouseEvent):void {
     if (!this.openScope) {
       return;
     }
@@ -44,13 +49,13 @@ export class DropdownService {
     }
 
     if (event && this.openScope.toggleEl &&
-      this.openScope.toggleEl.nativeElement === event.target) {
+      this.openScope.toggleEl.nativeElement.contains(event.target)) {
       return;
     }
 
     if (event && this.openScope.autoClose === NONINPUT &&
       this.openScope.menuEl &&
-      /input|textarea/i.test((<any> event.target).tagName) &&
+      /input|textarea/i.test((event.target as any).tagName) &&
       this.openScope.menuEl.nativeElement.contains(event.target)) {
       return;
     }
@@ -64,10 +69,10 @@ export class DropdownService {
     this.openScope.isOpen = false;
   }
 
-  private keybindFilter(event:KeyboardEvent) {
+  private keybindFilter(event:KeyboardEvent):void {
     if (event.which === 27) {
       this.openScope.focusToggleElement();
-      this.closeDropdown(null);
+      this.closeDropdown(void 0);
       return;
     }
 
