@@ -1,4 +1,5 @@
 export * from './accordion/accordion-demo';
+export * from './affix/affix-demo';
 export * from './alert/alert-demo';
 export * from './buttons/buttons-demo';
 export * from './carousel/carousel-demo';

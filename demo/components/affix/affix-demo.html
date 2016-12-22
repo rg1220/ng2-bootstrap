@@ -1,1 +1,17 @@
-<nav id="mainNav" class="navbar navbar-default" affix affixOffsetTop="100" (affixChange)="onAffixChange($event)"> [...] </nav>
+<div affix [affixOffsetTop]="100" (affixChange)="onAffixChange($event)" class="affix-demo"> [...] </div>
+
+<style>
+  .affix-demo {
+    height: 200px;
+    width: 200px;
+    background: red;
+  }
+
+  .affix-demo.affix {
+    top: 100px; /* ActiveNot  */
+  }
+
+  .affix-demo.affix-top {
+    /*top: 100px; !* Active *!*/
+  }
+</style>

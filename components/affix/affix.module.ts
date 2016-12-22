@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 
-import { AlertComponent } from './alert.component';
+import { AffixDirective } from './affix.directive';
 
 @NgModule({
   imports: [CommonModule],
-  declarations: [AlertComponent],
-  exports: [AlertComponent]
+  declarations: [AffixDirective],
+  exports: [AffixDirective]
 })
-export class AlertModule {
+export class AffixModule {
 }

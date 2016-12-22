@@ -1,19 +1,16 @@
-import {Component} from 'angular2/core';
-import {CORE_DIRECTIVES} from 'angular2/common';
-import {Affix, AffixStatusChange} from '../../../ng2-bootstrap';
+import { Component } from '@angular/core';
+import { AffixStatusChange } from '../../../components/affix/affix.directive';
 
 // webpack html imports
 let template = require('./affix-demo.html');
 
 @Component({
   selector: 'affix-demo',
-  template: template,
-  directives: [Affix, CORE_DIRECTIVES]
+  template: template
 })
-export class AffixDemo {
+export class AffixDemoComponent {
 
-  onAffixChange(event:AffixStatusChange) {
+  public onAffixChange(event:AffixStatusChange):void {
     console.log('Navbar changed from ' + event.oldStatus + ' to ' + event.newStatus);
   }
-
 }

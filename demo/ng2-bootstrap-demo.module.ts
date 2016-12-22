@@ -6,6 +6,7 @@ import { Ng2BootstrapModule } from '../components';
 
 import {
   AccordionDemoComponent,
+  AffixDemoComponent,
   AlertDemoComponent,
   ButtonsDemoComponent,
   CarouselDemoComponent,
@@ -32,6 +33,7 @@ import { DemoComponent } from './app.component';
 import { routing } from './router.config';
 
 import { AccordionSectionComponent } from './components/accordion-section';
+import { AffixSectionComponent } from './components/affix-section';
 import { AlertSectionComponent } from './components/alert-section';
 import { ButtonsSectionComponent } from './components/buttons-section';
 import { CarouselSectionComponent } from './components/carousel-section';
@@ -57,6 +59,7 @@ import { TypeaheadSectionComponent } from './components/typeahead-section';
     SearchFilterPipe,
 
     AccordionDemoComponent,
+    AffixDemoComponent,
     AlertDemoComponent,
     ButtonsDemoComponent,
     CarouselDemoComponent,
@@ -73,6 +76,7 @@ import { TypeaheadSectionComponent } from './components/typeahead-section';
     TypeaheadDemoComponent,
 
     AccordionSectionComponent,
+    AffixSectionComponent,
     AlertSectionComponent,
     ButtonsSectionComponent,
     CarouselSectionComponent,

@@ -1,6 +1,7 @@
 import { RouterModule, Routes } from '@angular/router';
 
 import { AccordionSectionComponent } from './components/accordion-section';
+import { AffixSectionComponent } from './components/affix-section';
 import { AlertSectionComponent } from './components/alert-section';
 import { ButtonsSectionComponent } from './components/buttons-section';
 import { CarouselSectionComponent } from './components/carousel-section';
@@ -26,6 +27,10 @@ export const routes:Routes = [
     path: 'accordion',
     data: ['Accordion'],
     component: AccordionSectionComponent
+  }, {
+    path: 'affix',
+    data: ['Affix'],
+    component: AffixSectionComponent
   }, {
     path: 'alerts',
     data: ['Alerts'],

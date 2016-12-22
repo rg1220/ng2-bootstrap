@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 
 import { AccordionModule } from './accordion/accordion.module';
+import { AffixModule } from './affix/affix.module';
 import { AlertModule } from './alert/alert.module';
 import { ButtonsModule } from './buttons/buttons.module';
 import { CarouselModule } from './carousel/carousel.module';
@@ -19,9 +20,9 @@ import { ComponentsHelper } from './utils/components-helper.service';
 
 @NgModule({
   exports: [
-    AccordionModule, AlertModule, ButtonsModule, CarouselModule, CollapseModule, DatepickerModule, DropdownModule,
-    ModalModule, PaginationModule, ProgressbarModule, RatingModule, TabsModule, TimepickerModule, TooltipModule,
-    TypeaheadModule
+    AccordionModule, AffixModule, AlertModule, ButtonsModule, CarouselModule, CollapseModule, DatepickerModule,
+    DropdownModule, ModalModule, PaginationModule, ProgressbarModule, RatingModule, TabsModule, TimepickerModule,
+    TooltipModule, TypeaheadModule
   ],
   providers: [
     {provide: ComponentsHelper, useClass: ComponentsHelper}
